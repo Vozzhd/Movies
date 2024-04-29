@@ -1,9 +1,10 @@
-package com.example.movies
+package com.example.movies.ui.poster
 
 import android.app.Activity
 import android.os.Bundle
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.example.movies.R
 
 class PosterActivity : Activity() {
 
