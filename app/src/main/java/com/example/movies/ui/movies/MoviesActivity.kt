@@ -14,11 +14,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.movies.Creator
 import com.example.movies.ui.poster.PosterActivity
 import com.example.movies.R
 import com.example.movies.data.dto.MovieDto
 import com.example.movies.data.dto.MoviesSearchResponse
 import com.example.movies.data.network.IMDbApiService
+import com.example.movies.domain.api.MoviesInteractor
 import com.example.movies.domain.models.Movie
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,20 +29,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MoviesActivity : Activity() {
-
+    private val moviesInteractor = Creator.provideMoviesInteractor()
     private val imdbBaseUrl = "https://tv-api.com"
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(imdbBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val imdbService = retrofit.create(IMDbApiService::class.java)
 
     private lateinit var queryInput: EditText
     private lateinit var placeholderMessage: TextView
@@ -62,7 +57,6 @@ class MoviesActivity : Activity() {
     private val handler = Handler(Looper.getMainLooper())
 
     private val searchRunnable = Runnable { searchRequest() }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,34 +98,24 @@ class MoviesActivity : Activity() {
             moviesList.visibility = View.GONE
             progressBar.visibility = View.VISIBLE
 
-            imdbService.searchMovies(queryInput.text.toString()).enqueue(object :
-                Callback<MoviesSearchResponse> {
-                override fun onResponse(call: Call<MoviesSearchResponse>,
-                                        response: Response<MoviesSearchResponse>
-                ) {
-                    progressBar.visibility = View.GONE
-                    if (response.code() == 200) {
-                        movies.clear()
-                        if (response.body()?.results?.isNotEmpty() == true) {
+            moviesInteractor.searchMovies(
+                queryInput.text.toString(),
+                object : MoviesInteractor.MoviesConsumer {
+                    override fun consume(foundMovies: List<Movie>) {
+                        handler.post {
+                            progressBar.visibility = View.GONE
+                            movies.clear()
+                            movies.addAll(foundMovies)
                             moviesList.visibility = View.VISIBLE
-                            movies.addAll(response.body()?.results!! as List<Movie>)
                             adapter.notifyDataSetChanged()
+                            if (movies.isEmpty()) {
+                                showMessage(getString(R.string.nothing_found), "")
+                            } else {
+                                hideMessage()
+                            }
                         }
-                        if (movies.isEmpty()) {
-                            showMessage(getString(R.string.nothing_found), "")
-                        } else {
-                            hideMessage()
-                        }
-                    } else {
-                        showMessage(getString(R.string.something_went_wrong), response.code().toString())
                     }
-                }
-
-                override fun onFailure(call: Call<MoviesSearchResponse>, t: Throwable) {
-                    progressBar.visibility = View.GONE
-                    showMessage(getString(R.string.something_went_wrong), t.message.toString())
-                }
-            })
+                })
         }
     }
 
@@ -154,7 +138,7 @@ class MoviesActivity : Activity() {
         placeholderMessage.visibility = View.GONE
     }
 
-    private fun clickDebounce() : Boolean {
+    private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
