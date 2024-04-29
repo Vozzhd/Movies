@@ -1,10 +1,10 @@
 package com.example.movies.data.network
-
 import com.example.movies.data.NetworkClient
 import com.example.movies.data.dto.MoviesSearchRequest
 import com.example.movies.data.dto.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 class RetrofitNetworkClient : NetworkClient {
 

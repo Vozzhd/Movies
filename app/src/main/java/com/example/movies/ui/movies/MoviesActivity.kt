@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.ui.poster.PosterActivity
 import com.example.movies.R
+import com.example.movies.data.dto.MovieDto
 import com.example.movies.data.dto.MoviesSearchResponse
 import com.example.movies.data.network.IMDbApiService
 import com.example.movies.domain.models.Movie
@@ -113,7 +114,7 @@ class MoviesActivity : Activity() {
                         movies.clear()
                         if (response.body()?.results?.isNotEmpty() == true) {
                             moviesList.visibility = View.VISIBLE
-                            movies.addAll(response.body()?.results!!)
+                            movies.addAll(response.body()?.results!! as List<Movie>)
                             adapter.notifyDataSetChanged()
                         }
                         if (movies.isEmpty()) {
