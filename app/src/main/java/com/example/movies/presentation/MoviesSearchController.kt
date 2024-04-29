@@ -5,26 +5,24 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.Adapter
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.movies.Creator
+import com.example.movies.util.Creator
 import com.example.movies.R
 import com.example.movies.domain.api.MoviesInteractor
 import com.example.movies.domain.models.Movie
 import com.example.movies.ui.movies.MoviesAdapter
 
-class MoviesSearchController (
-    private val activity : Activity,
+class MoviesSearchController(
+    private val activity: Activity,
     private val adapter: MoviesAdapter
 ) {
-    private val moviesInteractor = Creator.provideMoviesInteractor()
+    private val moviesInteractor = Creator.provideMoviesInteractor(activity)
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
@@ -49,10 +47,11 @@ class MoviesSearchController (
 
         adapter.movies = movies
 
-        moviesList.layoutManager = LinearLayoutManager(activity,LinearLayoutManager.VERTICAL,false)
+        moviesList.layoutManager =
+            LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         moviesList.adapter = adapter
 
-        queryInput.addTextChangedListener(object :TextWatcher {
+        queryInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -64,13 +63,16 @@ class MoviesSearchController (
             }
         })
     }
+
     fun onDestroy() {
         handler.removeCallbacks(searchRunnable)
     }
+
     private fun searchDebounce() {
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
+
     private fun searchRequest() {
         if (queryInput.text.toString().isNotEmpty()) {
             placeholderMessage.visibility = View.GONE
@@ -79,14 +81,21 @@ class MoviesSearchController (
 
             moviesInteractor.searchMovies(queryInput.text.toString(),
                 object : MoviesInteractor.MoviesConsumer {
-                    override fun consume(foundMovies: List<Movie>) {
+                    override fun consume(foundMovies: List<Movie>?, errorMessage: String?) {
                         handler.post {
                             progressBar.visibility = View.GONE
-                            movies.clear()
-                            movies.addAll(foundMovies)
-                            moviesList.visibility = View.VISIBLE
-                            adapter.notifyDataSetChanged()
-                            if (movies.isEmpty()) {
+                            if (foundMovies != null) {
+                                movies.clear()
+                                movies.addAll(foundMovies)
+                                adapter.notifyDataSetChanged()
+                                moviesList.visibility = View.VISIBLE
+                            }
+                            if (errorMessage != null) {
+                                showMessage(
+                                    activity.getString(R.string.something_went_wrong),
+                                    errorMessage
+                                )
+                            } else if (movies.isEmpty()) {
                                 showMessage(activity.getString(R.string.nothing_found), "")
                             } else {
                                 hideMessage()
@@ -96,6 +105,7 @@ class MoviesSearchController (
                 })
         }
     }
+
     private fun showMessage(text: String, additionalMessage: String) {
         if (text.isNotEmpty()) {
             placeholderMessage.visibility = View.VISIBLE
@@ -109,6 +119,7 @@ class MoviesSearchController (
             placeholderMessage.visibility = View.GONE
         }
     }
+
     private fun hideMessage() {
         placeholderMessage.visibility = View.GONE
     }

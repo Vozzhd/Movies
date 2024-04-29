@@ -3,7 +3,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import com.example.movies.Creator
+import com.example.movies.util.Creator
 import com.example.movies.R
 import com.example.movies.ui.movies.MoviesAdapter
 import com.example.movies.ui.poster.PosterActivity

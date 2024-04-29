@@ -1,6 +1,7 @@
-package com.example.movies
+package com.example.movies.util
 
 import android.app.Activity
+import android.content.Context
 import com.example.movies.data.MoviesRepositoryImpl
 import com.example.movies.data.network.RetrofitNetworkClient
 import com.example.movies.domain.api.MoviesInteractor
@@ -11,12 +12,12 @@ import com.example.movies.presentation.PosterController
 import com.example.movies.ui.movies.MoviesAdapter
 
 object Creator {
-    private fun getMoviesRepository(): MoviesRepository {
-        return MoviesRepositoryImpl(RetrofitNetworkClient())
+    private fun getMoviesRepository(context:Context): MoviesRepository {
+        return MoviesRepositoryImpl(RetrofitNetworkClient(context))
     }
 
-    fun provideMoviesInteractor(): MoviesInteractor {
-        return MoviesInteractorImpl(getMoviesRepository())
+    fun provideMoviesInteractor(context: Context): MoviesInteractor {
+        return MoviesInteractorImpl(getMoviesRepository(context))
     }
 
     fun provideMoviesSearchController(
@@ -26,7 +27,7 @@ object Creator {
         return MoviesSearchController(activity, adapter)
     }
 
-    fun providePosterController (activity: Activity) : PosterController {
+    fun providePosterController(activity: Activity): PosterController {
         return PosterController(activity)
     }
 }
