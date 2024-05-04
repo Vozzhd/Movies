@@ -110,15 +110,16 @@ class MoviesActivity : Activity(), MoviesView {
         placeholderMessage.text = errorMessage
     }
 
-//    override fun showEmpty(emptyMessage: String) {
-//        showError(emptyMessage)
-//    }
+    fun showEmpty(emptyMessage: String) {
+        showError(emptyMessage)
+    }
 
     override fun render(state: MoviesState) {
-        when {
-            state.isLoading -> showLoading()
-            state.errorMessage != null -> showError(state.errorMessage)
-            else -> showContent(state.movies)
+        when (state) {
+            is MoviesState.Loading -> showLoading()
+            is MoviesState.Content -> showContent(state.movies)
+            is MoviesState.Error -> showError(state.errorMessage)
+            is MoviesState.Empty -> showEmpty(state.message)
         }
     }
 
