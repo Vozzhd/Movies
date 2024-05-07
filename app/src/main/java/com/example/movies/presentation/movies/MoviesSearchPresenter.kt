@@ -9,34 +9,22 @@ import com.example.movies.domain.api.MoviesInteractor
 import com.example.movies.domain.models.Movie
 import com.example.movies.ui.movies.models.MoviesState
 import com.example.movies.util.Creator
+import moxy.MvpPresenter
 
-class MoviesSearchPresenter(
+class MoviesSearchPresenter (
     private val context: Context
-) {
+) : MvpPresenter<MoviesView>() {
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
     }
 
-    private var view: MoviesView? = null
-    private var state: MoviesState? = null
     private var lastSearchText: String? = null
     private val moviesInteractor = Creator.provideMoviesInteractor(context)
-
-    private val movies = ArrayList<Movie>()
-
     private val handler = Handler(Looper.getMainLooper())
 
-    fun attachView(view: MoviesView) {
-        this.view = view
-        state?.let { view.render(it) }
-    }
 
-    fun detachView() {
-        this.view = null
-    }
-
-    fun onDestroy() {
+    override fun onDestroy() {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
@@ -57,13 +45,12 @@ class MoviesSearchPresenter(
     }
 
     private fun renderState(state: MoviesState) {
-        this.state = state
-        this.view?.render(state)
+        viewState.render(state)
     }
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-            view?.render(MoviesState.Loading)
+            viewState?.render(MoviesState.Loading)
 
             moviesInteractor.searchMovies(
                 newSearchText,
@@ -82,7 +69,7 @@ class MoviesSearchPresenter(
                                             errorMessage = context.getString(R.string.something_went_wrong)
                                         )
                                     )
-                                    view?.showToastMessage(errorMessage)
+                                    viewState?.showToastMessage(errorMessage)
                                 }
 
                                 movies.isEmpty() -> {
