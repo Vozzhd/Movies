@@ -11,6 +11,6 @@ interface MoviesView : MvpView{
     fun render(state:MoviesState)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun showToastMessage(toastMessage: String)
+    fun showToast(toastMessage: String)
 
 }

@@ -11,34 +11,38 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.R
 import com.example.movies.domain.models.Movie
 import com.example.movies.domain.models.MoviesApplication
-import com.example.movies.presentation.movies.MoviesSearchPresenter
+import com.example.movies.presentation.movies.MoviesSearchViewModel
 import com.example.movies.presentation.movies.MoviesView
 import com.example.movies.ui.movies.models.MoviesState
 import com.example.movies.ui.poster.PosterActivity
-import com.example.movies.util.Creator
-import moxy.MvpActivity
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
 
-class MoviesActivity : MvpActivity(), MoviesView {
-
+class MoviesActivity : ComponentActivity(), MoviesView {
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
-
     }
 
-    private val adapter = MoviesAdapter {
-        if (clickDebounce()) {
-            val intent = Intent(this, PosterActivity::class.java)
-            intent.putExtra("poster", it.image)
-            startActivity(intent)
+    private val adapter = MoviesAdapter(
+        object : MoviesAdapter.MovieClickListener {
+            override fun onMovieClick(movie: Movie) {
+                if (clickDebounce()) {
+                    val intent = Intent(this@MoviesActivity, PosterActivity::class.java)
+                    intent.putExtra("poster", movie.image)
+                    startActivity(intent)
+                }
+            }
+
+            override fun onFavoriteToggleClick(movie: Movie) {
+                viewModel.toggleFavorite(movie)
+            }
         }
-    }
+    )
 
     private var isClickAllowed = true
 
@@ -51,18 +55,16 @@ class MoviesActivity : MvpActivity(), MoviesView {
     private lateinit var moviesList: RecyclerView
     private lateinit var progressBar: ProgressBar
 
-    @InjectPresenter
-    lateinit var moviesSearchPresenter : MoviesSearchPresenter
-
-@ProvidePresenter
-fun providePresenter():MoviesSearchPresenter{
-    return Creator.provideMoviesSearchPresenter(context = this.applicationContext)
-}
-
+    private lateinit var viewModel: MoviesSearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
+
+        viewModel = ViewModelProvider(
+            this,
+            MoviesSearchViewModel.getViewModelFactory()
+        )[MoviesSearchViewModel::class.java]
 
         placeholderMessage = findViewById(R.id.placeholderMessage)
         queryInput = findViewById(R.id.queryInput)
@@ -72,6 +74,11 @@ fun providePresenter():MoviesSearchPresenter{
         moviesList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         moviesList.adapter = adapter
 
+        viewModel.observeShowToast().observe(this) { toast ->
+            showToast(toast)
+        }
+
+
 
 
         textWatcher = object : TextWatcher {
@@ -79,7 +86,7 @@ fun providePresenter():MoviesSearchPresenter{
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                moviesSearchPresenter.searchDebounce(
+                viewModel.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
             }
@@ -90,8 +97,10 @@ fun providePresenter():MoviesSearchPresenter{
 
         textWatcher?.let { queryInput.addTextChangedListener(it) }
 
+        viewModel.observeState().observe(this) {
+            render(it)
+        }
     }
-
 
 
     override fun onDestroy() {
@@ -99,7 +108,7 @@ fun providePresenter():MoviesSearchPresenter{
         textWatcher?.let { queryInput.removeTextChangedListener(it) }
 
         if (isFinishing) {
-            (this.applicationContext as? MoviesApplication)?.moviesSearchPresenter = null
+            (this.applicationContext as? MoviesApplication)?.moviesSearchViewModel = null
         }
     }
 
@@ -150,8 +159,8 @@ fun providePresenter():MoviesSearchPresenter{
         adapter.notifyDataSetChanged()
     }
 
-
-    override fun showToastMessage(toastMessage: String) {
+    override fun showToast(toastMessage: String) {
         Toast.makeText(this, toastMessage, Toast.LENGTH_LONG).show()
     }
+
 }
