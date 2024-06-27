@@ -11,23 +11,23 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.R
 import com.example.movies.domain.models.Movie
-import com.example.movies.domain.models.MoviesApplication
 import com.example.movies.presentation.movies.MoviesSearchViewModel
 import com.example.movies.presentation.movies.MoviesView
 import com.example.movies.ui.movies.models.MoviesState
 import com.example.movies.ui.poster.PosterActivity
+import com.example.movies.util.MoviesApplication
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MoviesActivity : ComponentActivity(), MoviesView {
+class MoviesActivity : AppCompatActivity(), MoviesView {
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
-
+    private val viewModel by viewModel <MoviesSearchViewModel>()
     private val adapter = MoviesAdapter(
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
@@ -55,16 +55,16 @@ class MoviesActivity : ComponentActivity(), MoviesView {
     private lateinit var moviesList: RecyclerView
     private lateinit var progressBar: ProgressBar
 
-    private lateinit var viewModel: MoviesSearchViewModel
+
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
 
-        viewModel = ViewModelProvider(
-            this,
-            MoviesSearchViewModel.getViewModelFactory()
-        )[MoviesSearchViewModel::class.java]
+
 
         placeholderMessage = findViewById(R.id.placeholderMessage)
         queryInput = findViewById(R.id.queryInput)

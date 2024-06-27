@@ -35,9 +35,15 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 dependencies {
+    implementation ("io.insert-koin:koin-android:3.3.0")
     val  moxyVersion = "2.2.2"
     implementation ("com.github.moxy-community:moxy:$moxyVersion")
     implementation ("com.github.moxy-community:moxy-android:$moxyVersion")
