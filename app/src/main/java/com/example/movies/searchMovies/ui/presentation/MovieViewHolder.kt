@@ -1,4 +1,4 @@
-package com.example.movies.searchMovies.ui
+package com.example.movies.searchMovies.ui.presentation
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater

@@ -35,7 +35,7 @@ class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInt
                 }
 
                 is Resource.Error -> {
-                    consumer.consume(null, resource.message)
+                    consumer.consume(resource.data, resource.message)
                 }
             }
         }

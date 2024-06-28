@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.details.PosterActivity"
+            android:name="com.example.movies.details.ui.DetailsActivity"
             android:exported="false" />
 
     </application>

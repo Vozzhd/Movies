@@ -15,11 +15,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.R
-import com.example.movies.searchMovies.domain.model.Movie
 import com.example.movies.details.ui.DetailsActivity
+import com.example.movies.searchMovies.domain.model.Movie
 import com.example.movies.searchMovies.ui.models.MoviesState
 import com.example.movies.searchMovies.ui.models.MoviesView
-import com.example.movies.searchMovies.ui.models.MoviesViewModel
+import com.example.movies.searchMovies.ui.presentation.MoviesAdapter
 import com.example.movies.util.MoviesApplication
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,6 +36,7 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
                 if (clickDebounce()) {
                     val intent = Intent(this@MoviesActivity, DetailsActivity::class.java)
                     intent.putExtra("poster", movie.image)
+                    intent.putExtra("movie_id", movie.id)
                     startActivity(intent)
                 }
             }

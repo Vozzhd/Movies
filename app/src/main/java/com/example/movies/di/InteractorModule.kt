@@ -6,5 +6,5 @@ import org.koin.dsl.module
 
 val interactorModule = module {
 
-    single <MoviesInteractor> { MoviesInteractorImpl(get()) }
+    factory <MoviesInteractor> { MoviesInteractorImpl(get()) }
 }

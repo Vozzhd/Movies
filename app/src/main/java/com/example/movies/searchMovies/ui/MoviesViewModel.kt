@@ -1,4 +1,4 @@
-package com.example.movies.searchMovies.ui.models
+package com.example.movies.searchMovies.ui
 
 import android.content.Context
 import android.os.Handler
@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import com.example.movies.R
 import com.example.movies.searchMovies.domain.api.MoviesInteractor
 import com.example.movies.searchMovies.domain.model.Movie
+import com.example.movies.searchMovies.ui.models.MoviesState
+import com.example.movies.util.SingleLiveEvent
 
 
 class MoviesViewModel(

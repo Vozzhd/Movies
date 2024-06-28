@@ -23,9 +23,7 @@ class AboutFragment : Fragment() {
         }
     }
 
-    private val aboutViewModel: AboutViewModel by viewModel {
-        parametersOf(requireArguments().getString(MOVIE_ID))
-    }
+    private val aboutViewModel: AboutViewModel by viewModel { parametersOf(requireArguments().getString(MOVIE_ID)) }
 
     private lateinit var binding: FragmentAboutBinding
 

@@ -18,7 +18,7 @@ class DetailsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val poster = intent.getStringExtra("poster") ?: ""
-        val movieId = intent.getStringExtra("id") ?: ""
+        val movieId = intent.getStringExtra("movie_id") ?: ""
 
         binding.viewPager.adapter = DetailsViewPagerAdapter(supportFragmentManager,
             lifecycle, poster, movieId)
