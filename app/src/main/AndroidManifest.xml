@@ -17,7 +17,7 @@
         android:theme="@style/Theme.Movies"
         tools:targetApi="31">
         <activity
-            android:name=".ui.movies.MoviesActivity"
+            android:name=".searchMovies.ui.MoviesActivity"
             android:exported="true"
             android:screenOrientation="portrait">
 
@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.poster.PosterActivity"
+            android:name=".ui.details.PosterActivity"
             android:exported="false" />
 
     </application>

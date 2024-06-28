@@ -5,12 +5,12 @@ import com.example.movies.di.dataModule
 import com.example.movies.di.interactorModule
 import com.example.movies.di.repositoryModule
 import com.example.movies.di.viewModelModule
-import com.example.movies.presentation.movies.MoviesSearchViewModel
+import com.example.movies.searchMovies.ui.models.MoviesViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
 class MoviesApplication : Application() {
-    var moviesSearchViewModel : MoviesSearchViewModel? = null
+    var moviesViewModel : MoviesViewModel? = null
     override fun onCreate() {
         super.onCreate()
         startKoin {

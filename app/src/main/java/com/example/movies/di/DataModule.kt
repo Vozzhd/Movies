@@ -2,10 +2,10 @@ package com.example.movies.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.movies.data.NetworkClient
-import com.example.movies.data.network.IMDbApiService
-import com.example.movies.data.network.RetrofitNetworkClient
-import com.example.movies.data.storage.LocalStorage
+import com.example.movies.searchMovies.data.network.retrofit.NetworkClient
+import com.example.movies.searchMovies.data.network.IMDbApiService
+import com.example.movies.searchMovies.data.network.retrofit.RetrofitNetworkClient
+import com.example.movies.searchMovies.data.storage.LocalStorage
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
