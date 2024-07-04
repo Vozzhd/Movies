@@ -19,10 +19,7 @@ class RetrofitNetworkClient(
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
-        if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest)) {
-            return Response().apply { resultCode = 400 }
-        }
-        if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest) && dto is MovieCastRequest) {
+        if ((dto !is MoviesSearchRequest) && (dto !is MovieDetailsRequest) && dto !is MovieCastRequest) {
             return Response().apply { resultCode = 400 }
         }
 
@@ -34,6 +31,7 @@ class RetrofitNetworkClient(
         }
 
         val body = response.body()
+
         return if (body != null) {
             body.apply { resultCode = response.code() }
         } else {
