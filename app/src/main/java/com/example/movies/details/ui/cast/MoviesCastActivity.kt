@@ -6,13 +6,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.movies.R
 import com.example.movies.databinding.ActivityMoviesCastBinding
-import com.example.movies.details.ui.cast.RV.MoviesCastAdapter
+import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class MoviesCastActivity : AppCompatActivity(R.layout.activity_movies_cast) {
+class MoviesCastActivity : AppCompatActivity() {
 
     companion object {
         private const val ARGS_MOVIE_ID = "movie_id"
@@ -27,7 +26,11 @@ class MoviesCastActivity : AppCompatActivity(R.layout.activity_movies_cast) {
     private val movieCastViewModel: MovieCastViewModel by viewModel {
         parametersOf(intent.getStringExtra(ARGS_MOVIE_ID))
     }
-    private val adapter = MoviesCastAdapter()
+
+    private val adapter = ListDelegationAdapter(
+        movieCastHeaderDelegate(),
+        movieCastPersonDelegate(),
+    )
 
     private lateinit var binding: ActivityMoviesCastBinding
 
