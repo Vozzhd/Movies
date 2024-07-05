@@ -23,7 +23,6 @@ class MoviesViewModel(
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val SEARCH_REQUEST_TOKEN = Any()
-
     }
 
 
@@ -37,10 +36,6 @@ class MoviesViewModel(
     fun observeShowToast(): LiveData<String> = showToast
 
     private var latestSearchText: String? = null
-
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
 
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
@@ -97,7 +92,6 @@ class MoviesViewModel(
                             )
                         }
                     }
-
                 }
             })
         }
@@ -106,7 +100,6 @@ class MoviesViewModel(
     private val mediatorStateLiveData = MediatorLiveData<MoviesState>().also { liveData ->
         liveData.addSource(stateLiveData) { movieState ->
             liveData.value = when (movieState) {
-                // 2
                 is MoviesState.Content -> MoviesState.Content(movieState.movies.sortedByDescending { it.inFavorite })
                 is MoviesState.Empty -> movieState
                 is MoviesState.Error -> movieState
@@ -125,9 +118,7 @@ class MoviesViewModel(
         } else {
             moviesInteractor.addMovieToFavorites(movie)
         }
-
         updateMovieContent(movie.id, movie.copy(inFavorite = !movie.inFavorite))
-
     }
 
     private fun updateMovieContent(movieId: String, newMovie: Movie) {
@@ -147,9 +138,9 @@ class MoviesViewModel(
                     }
                 )
             }
-
-            // ...
-
         }
+    }
+    override fun onCleared() {
+        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 }

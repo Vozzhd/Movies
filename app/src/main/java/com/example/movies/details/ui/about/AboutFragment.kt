@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.movies.databinding.FragmentAboutBinding
 import com.example.movies.details.data.MovieDetails
 import com.example.movies.details.domain.model.AboutState
+import com.example.movies.details.ui.cast.MoviesCastActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -23,7 +24,13 @@ class AboutFragment : Fragment() {
         }
     }
 
-    private val aboutViewModel: AboutViewModel by viewModel { parametersOf(requireArguments().getString(MOVIE_ID)) }
+    private val aboutViewModel: AboutViewModel by viewModel {
+        parametersOf(
+            requireArguments().getString(
+                MOVIE_ID
+            )
+        )
+    }
 
     private lateinit var binding: FragmentAboutBinding
 
@@ -43,6 +50,14 @@ class AboutFragment : Fragment() {
                 is AboutState.Content -> showDetails(it.movie)
                 is AboutState.Error -> showErrorMessage(it.message)
             }
+        }
+
+        binding.showCastButton.setOnClickListener {
+            startActivity(
+                MoviesCastActivity.newInstance(
+                requireContext(),
+                requireArguments().getString(MOVIE_ID).orEmpty()
+            ))
         }
     }
 

@@ -40,7 +40,6 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
                     startActivity(intent)
                 }
             }
-
             override fun onFavoriteToggleClick(movie: Movie) {
                 viewModel.toggleFavorite(movie)
             }
@@ -58,16 +57,9 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
     private lateinit var moviesList: RecyclerView
     private lateinit var progressBar: ProgressBar
 
-
-
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
-
-
 
         placeholderMessage = findViewById(R.id.placeholderMessage)
         queryInput = findViewById(R.id.queryInput)
@@ -80,9 +72,6 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
         viewModel.observeShowToast().observe(this) { toast ->
             showToast(toast)
         }
-
-
-
 
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -124,11 +113,29 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
         return current
     }
 
+    override fun render(state: MoviesState) {
+        when (state) {
+            is MoviesState.Loading -> showLoading()
+            is MoviesState.Content -> showContent(state.movies)
+            is MoviesState.Error -> showError(state.errorMessage)
+            is MoviesState.Empty -> showEmpty(state.message)
+        }
+    }
 
     fun showLoading() {
         moviesList.visibility = View.GONE
         placeholderMessage.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
+    }
+
+    fun showContent(movies: List<Movie>) {
+        moviesList.visibility = View.VISIBLE
+        placeholderMessage.visibility = View.GONE
+        progressBar.visibility = View.GONE
+
+        adapter.movies.clear()
+        adapter.movies.addAll(movies)
+        adapter.notifyDataSetChanged()
     }
 
     fun showError(errorMessage: String) {
@@ -141,25 +148,6 @@ class MoviesActivity : AppCompatActivity(), MoviesView {
 
     fun showEmpty(emptyMessage: String) {
         showError(emptyMessage)
-    }
-
-    override fun render(state: MoviesState) {
-        when (state) {
-            is MoviesState.Loading -> showLoading()
-            is MoviesState.Content -> showContent(state.movies)
-            is MoviesState.Error -> showError(state.errorMessage)
-            is MoviesState.Empty -> showEmpty(state.message)
-        }
-    }
-
-    fun showContent(movies: List<Movie>) {
-        moviesList.visibility = View.VISIBLE
-        placeholderMessage.visibility = View.GONE
-        progressBar.visibility = View.GONE
-
-        adapter.movies.clear()
-        adapter.movies.addAll(movies)
-        adapter.notifyDataSetChanged()
     }
 
     override fun showToast(toastMessage: String) {

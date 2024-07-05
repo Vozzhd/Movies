@@ -1,19 +1,24 @@
 package com.example.movies.searchMovies.data.api
 
+import com.example.movies.details.data.MovieCastConverter
+import com.example.movies.details.data.MovieCastRequest
 import com.example.movies.details.data.MovieDetails
 import com.example.movies.details.data.MovieDetailsRequest
 import com.example.movies.details.data.MovieDetailsResponse
+import com.example.movies.details.data.dto.MovieCastResponse
 import com.example.movies.searchMovies.data.dto.MoviesSearchRequest
 import com.example.movies.searchMovies.data.dto.MoviesSearchResponse
 import com.example.movies.searchMovies.data.network.retrofit.NetworkClient
 import com.example.movies.searchMovies.data.storage.LocalStorage
 import com.example.movies.searchMovies.domain.api.MoviesRepository
 import com.example.movies.searchMovies.domain.model.Movie
+import com.example.movies.searchMovies.domain.model.MovieCast
 import com.example.movies.util.Resource
 
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val localStorage: LocalStorage
+    private val localStorage: LocalStorage,
+    private val movieCastConverter: MovieCastConverter
 ) : MoviesRepository {
 
     override fun searchMovies(expression: String): Resource<List<Movie>> {
@@ -65,6 +70,21 @@ class MoviesRepositoryImpl(
             else -> {
                 Resource.Error("Ошибка сервера")
             }
+        }
+    }
+
+    override fun getMovieCast(movieId: String): Resource<MovieCast> {
+        val response = networkClient.doRequest(MovieCastRequest(movieId))
+        return when (response.resultCode) {
+            -1 -> Resource.Error("Проверьте подключение к интернету")
+            200 -> {
+                with(response as MovieCastResponse) {
+                    Resource.Success(
+                        data = movieCastConverter.convert(response as MovieCastResponse)
+                    )
+                }
+            }
+            else -> Resource.Error("Ошибка сервера")
         }
     }
 
