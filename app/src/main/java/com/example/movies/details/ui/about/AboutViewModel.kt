@@ -3,7 +3,7 @@ package com.example.movies.details.ui.about
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.movies.searchMovies.domain.api.MoviesInteractor
+import com.example.movies.search.domain.api.MoviesInteractor
 import com.example.movies.details.data.MovieDetails
 import com.example.movies.details.domain.model.AboutState
 
