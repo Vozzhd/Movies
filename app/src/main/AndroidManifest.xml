@@ -27,9 +27,6 @@
         </activity>
 
         <activity
-            android:name="com.example.movies.details.ui.DetailsActivity"
-            android:exported="false" />
-        <activity
             android:name=".details.ui.cast.MoviesCastActivity"
             android:exported="true" />
     </application>

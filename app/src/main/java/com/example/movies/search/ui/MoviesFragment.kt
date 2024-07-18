@@ -1,6 +1,5 @@
 package com.example.movies.search.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,10 +13,12 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.movies.R
 import com.example.movies.databinding.FragmentMoviesBinding
-import com.example.movies.details.ui.DetailsActivity
+import com.example.movies.details.ui.DetailsFragment
 import com.example.movies.search.domain.model.Movie
 import com.example.movies.search.ui.models.MoviesState
 import com.example.movies.search.ui.presentation.MoviesAdapter
@@ -29,18 +30,31 @@ class MoviesFragment : Fragment() {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private val viewModel by viewModel <MoviesViewModel>()
+    private val viewModel by viewModel<MoviesViewModel>()
 
     private val adapter = MoviesAdapter(
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
                 if (clickDebounce()) {
-                    val intent = Intent(requireContext(), DetailsActivity::class.java)
-                    intent.putExtra("poster", movie.image)
-                    intent.putExtra("movie_id", movie.id)
-                    startActivity(intent)
+                    parentFragmentManager.commit {
+                        replace(
+                            R.id.rootFragmentContainerView,
+                            DetailsFragment.newInstance(
+                                movie.id,
+                                movie.image
+                            ),
+                            DetailsFragment.TAG
+                        )
+                        addToBackStack(DetailsFragment.TAG)
+                    }
+
+//                    val intent = Intent(requireContext(), DetailsActivity::class.java)
+//                    intent.putExtra("poster", movie.image)
+//                    intent.putExtra("movie_id", movie.id)
+//                    startActivity(intent)
                 }
             }
+
             override fun onFavoriteToggleClick(movie: Movie) {
                 viewModel.toggleFavorite(movie)
             }
@@ -56,7 +70,11 @@ class MoviesFragment : Fragment() {
     private var isClickAllowed = true
     private var textWatcher: TextWatcher? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = FragmentMoviesBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -69,7 +87,8 @@ class MoviesFragment : Fragment() {
         moviesList = binding.locations
         progressBar = binding.progressBar
 
-        moviesList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        moviesList.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         moviesList.adapter = adapter
 
         textWatcher = object : TextWatcher {
@@ -102,9 +121,11 @@ class MoviesFragment : Fragment() {
 //            (this.applicationContext as? MoviesApplication)?.moviesViewModel = null
 //        }
     }
+
     private fun showToast(toastMessage: String) {
         Toast.makeText(requireContext(), toastMessage, Toast.LENGTH_LONG).show()
     }
+
     private fun render(state: MoviesState) {
         when (state) {
             is MoviesState.Loading -> showLoading()
@@ -113,11 +134,13 @@ class MoviesFragment : Fragment() {
             is MoviesState.Empty -> showEmpty(state.message)
         }
     }
+
     fun showLoading() {
         moviesList.visibility = View.GONE
         placeholderMessage.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
     }
+
     fun showContent(movies: List<Movie>) {
         moviesList.visibility = View.VISIBLE
         placeholderMessage.visibility = View.GONE
@@ -127,6 +150,7 @@ class MoviesFragment : Fragment() {
         adapter.movies.addAll(movies)
         adapter.notifyDataSetChanged()
     }
+
     fun showError(errorMessage: String) {
         moviesList.visibility = View.GONE
         placeholderMessage.visibility = View.VISIBLE
@@ -134,9 +158,11 @@ class MoviesFragment : Fragment() {
 
         placeholderMessage.text = errorMessage
     }
+
     fun showEmpty(emptyMessage: String) {
         showError(emptyMessage)
     }
+
     private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
