@@ -13,15 +13,16 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.movies.R
+import com.example.movies.core.navigation.Router
 import com.example.movies.databinding.FragmentMoviesBinding
 import com.example.movies.details.ui.DetailsFragment
 import com.example.movies.search.domain.model.Movie
 import com.example.movies.search.ui.models.MoviesState
+import com.example.movies.search.ui.models.MoviesViewModel
 import com.example.movies.search.ui.presentation.MoviesAdapter
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesFragment : Fragment() {
@@ -30,28 +31,19 @@ class MoviesFragment : Fragment() {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private val viewModel by viewModel<MoviesViewModel>()
+    private val router: Router by inject()
 
+    private val viewModel by viewModel<MoviesViewModel>()
     private val adapter = MoviesAdapter(
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
                 if (clickDebounce()) {
-                    parentFragmentManager.commit {
-                        replace(
-                            R.id.rootFragmentContainerView,
-                            DetailsFragment.newInstance(
-                                movie.id,
-                                movie.image
-                            ),
-                            DetailsFragment.TAG
+                    router.openFragment(
+                        DetailsFragment.newInstance(
+                            movie.id,
+                            movie.image
                         )
-                        addToBackStack(DetailsFragment.TAG)
-                    }
-
-//                    val intent = Intent(requireContext(), DetailsActivity::class.java)
-//                    intent.putExtra("poster", movie.image)
-//                    intent.putExtra("movie_id", movie.id)
-//                    startActivity(intent)
+                    )
                 }
             }
 

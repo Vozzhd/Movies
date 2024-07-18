@@ -3,7 +3,7 @@ package com.example.movies.di
 import com.example.movies.details.ui.about.AboutViewModel
 import com.example.movies.details.ui.cast.MovieCastViewModel
 import com.example.movies.details.ui.poster.PosterViewModel
-import com.example.movies.search.ui.MoviesViewModel
+import com.example.movies.search.ui.models.MoviesViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
