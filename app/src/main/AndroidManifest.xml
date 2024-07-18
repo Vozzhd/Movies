@@ -16,16 +16,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Movies"
         tools:targetApi="31">
-        <activity
-            android:name=".searchMovies.ui.MoviesActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
 
+        <activity
+            android:name=".core.ui.RootActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.example.movies.details.ui.DetailsActivity"
             android:exported="false" />
