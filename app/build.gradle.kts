@@ -46,6 +46,10 @@ dependencies {
     implementation( "com.hannesdorfmann:adapterdelegates4-kotlin-dsl:4.3.2")
     implementation ("com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.2")
 
+    implementation ("androidx.navigation:navigation-fragment-ktx:2.5.3")
+    implementation ("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation ("androidx.fragment:fragment-ktx:1.5.6")
+
     implementation ("io.insert-koin:koin-android:3.3.0")
     val  moxyVersion = "2.2.2"
     implementation ("com.github.moxy-community:moxy:$moxyVersion")

@@ -1,6 +1,6 @@
 package com.example.movies.details.data
 
-import com.example.movies.search.data.dto.Response
+import com.example.movies.movie_search.data.dto.Response
 
 class MovieDetailsResponse(val id: String,
                            val title: String,

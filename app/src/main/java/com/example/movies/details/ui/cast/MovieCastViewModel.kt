@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.movies.details.ui.cast.RV.MoviesCastRVItem
-import com.example.movies.search.domain.api.MoviesInteractor
-import com.example.movies.search.domain.model.MovieCast
+import com.example.movies.movie_search.domain.api.MoviesInteractor
+import com.example.movies.movie_search.domain.model.MovieCast
 
 class MovieCastViewModel(
     private val movieId: String,

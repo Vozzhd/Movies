@@ -1,6 +1,6 @@
 package com.example.movies.details.data.dto
 
-import com.example.movies.search.data.dto.Response
+import com.example.movies.movie_search.data.dto.Response
 
 data class MovieCastResponse(
     val actors: List<ActorResponse>,

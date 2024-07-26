@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.movies.R
 import com.example.movies.core.navigation.Router
 import com.example.movies.databinding.FragmentAboutBinding
 import com.example.movies.details.data.MovieDetails
@@ -55,11 +57,8 @@ class AboutFragment : Fragment() {
         }
 
         binding.showCastButton.setOnClickListener {
-           router.openFragment(
-               MovieCastFragment.newInstance(
-                   requireArguments().getString(MOVIE_ID).orEmpty()
-               )
-           )
+           findNavController().navigate(R.id.action_detailsFragment_to_movieCastFragment,
+               MovieCastFragment.createArgs(requireArguments().getString(MOVIE_ID).orEmpty()))
         }
     }
 
