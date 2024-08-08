@@ -17,14 +17,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movies.R
-import com.example.movies.core.navigation.Router
 import com.example.movies.databinding.FragmentMoviesBinding
 import com.example.movies.details.ui.DetailsFragment
 import com.example.movies.movie_search.domain.model.Movie
 import com.example.movies.movie_search.ui.models.MoviesState
 import com.example.movies.movie_search.ui.models.MoviesViewModel
 import com.example.movies.movie_search.ui.presentation.MoviesAdapter
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesFragment : Fragment() {
@@ -32,8 +30,6 @@ class MoviesFragment : Fragment() {
     companion object {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
-
-    private val router: Router by inject()
 
     private val viewModel by viewModel<MoviesViewModel>()
     private val adapter = MoviesAdapter(

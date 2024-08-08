@@ -1,16 +1,17 @@
 package com.example.movies.person_search.ui
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.movies.R
 import com.example.movies.person_search.domain.Person
 import com.example.movies.person_search.domain.api.NamesInteractor
 import com.example.movies.util.SingleLiveEvent
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class NamesViewModel(
     private val context: Context,
@@ -19,10 +20,7 @@ class NamesViewModel(
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
-
-    private val handler = Handler(Looper.getMainLooper())
 
     private val stateLiveData = MutableLiveData<NamesState>()
     fun observeState(): LiveData<NamesState> = stateLiveData
@@ -31,27 +29,21 @@ class NamesViewModel(
     fun observeShowToast(): LiveData<String?> = showToast
 
     private var latestSearchText: String? = null
+    private var searchJob: Job? = null
 
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
 
     fun searchDebounce(changedText: String) {
         if (latestSearchText == changedText) {
             return
         }
 
-        this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        latestSearchText = changedText
 
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchRequest(changedText)
+        }
     }
 
     private fun searchRequest(newSearchText: String) {
