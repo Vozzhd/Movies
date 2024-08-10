@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.movies.databinding.FragmentNamesBinding
 import com.example.movies.person_search.domain.Person
+import com.example.movies.person_search.ui.model.NamesState
+import com.example.movies.person_search.ui.model.NamesViewModel
+import com.example.movies.person_search.ui.presentation.PersonsAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NamesFragment : Fragment() {

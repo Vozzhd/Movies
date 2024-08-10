@@ -1,4 +1,4 @@
-package com.example.movies.person_search.ui
+package com.example.movies.person_search.ui.model
 
 import android.content.Context
 import androidx.lifecycle.LiveData
@@ -50,44 +50,33 @@ class NamesViewModel(
         if (newSearchText.isNotEmpty()) {
             renderState(NamesState.Loading)
 
-            namesInteractor.searchNames(newSearchText, object : NamesInteractor.NamesConsumer {
-                override fun consume(foundNames: List<Person>?, errorMessage: String?) {
-                    val persons = mutableListOf<Person>()
-                    if (foundNames != null) {
-                        persons.addAll(foundNames)
+            viewModelScope.launch {
+                namesInteractor
+                    .searchNames(newSearchText)
+                    .collect { pair ->
+                        processResult(pair.first, pair.second)
                     }
+            }
+        }
+    }
 
-                    when {
-                        errorMessage != null -> {
-                            renderState(
-                                NamesState.Error(
-                                    message = context.getString(
-                                        R.string.something_went_wrong
-                                    ),
-                                )
-                            )
-                            showToast.postValue(errorMessage)
-                        }
+    private fun processResult(foundNames: List<Person>?, errorMessage: String?) {
 
-                        persons.isEmpty() -> {
-                            renderState(
-                                NamesState.Empty(
-                                    message = context.getString(R.string.nothing_found),
-                                )
-                            )
-                        }
+        val persons = mutableListOf<Person>()
+        if (foundNames != null) {
+            persons.addAll(foundNames)
+        }
 
-                        else -> {
-                            renderState(
-                                NamesState.Content(
-                                    persons = persons,
-                                )
-                            )
-                        }
-                    }
+        when {
+            errorMessage != null -> {
+                renderState(NamesState.Error(message = context.getString(
+                            R.string.something_went_wrong
+                        )))
+                showToast.postValue(errorMessage)
+            }
 
-                }
-            })
+            persons.isEmpty() -> { renderState(NamesState.Empty(message = context.getString(R.string.nothing_found))) }
+            else -> { renderState(NamesState.Content(persons = persons)) }
         }
     }
 
@@ -95,3 +84,5 @@ class NamesViewModel(
         stateLiveData.postValue(state)
     }
 }
+
+

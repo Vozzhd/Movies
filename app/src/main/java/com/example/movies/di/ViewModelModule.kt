@@ -4,7 +4,7 @@ import com.example.movies.details.ui.about.AboutViewModel
 import com.example.movies.details.ui.cast.MovieCastViewModel
 import com.example.movies.details.ui.poster.PosterViewModel
 import com.example.movies.movie_search.ui.models.MoviesViewModel
-import com.example.movies.person_search.ui.NamesViewModel
+import com.example.movies.person_search.ui.model.NamesViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel

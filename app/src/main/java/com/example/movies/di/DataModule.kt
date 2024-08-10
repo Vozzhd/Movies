@@ -2,7 +2,7 @@ package com.example.movies.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.movies.movie_search.data.network.retrofit.NetworkClient
+import com.example.movies.movie_search.data.network.NetworkClient
 import com.example.movies.movie_search.data.network.IMDbApiService
 import com.example.movies.movie_search.data.network.retrofit.RetrofitNetworkClient
 import com.example.movies.movie_search.data.storage.LocalStorage

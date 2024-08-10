@@ -1,4 +1,4 @@
-package com.example.movies.person_search.ui
+package com.example.movies.person_search.ui.presentation
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

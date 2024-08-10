@@ -1,17 +1,16 @@
 package com.example.movies.movie_search.ui.models
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.movies.R
 import com.example.movies.movie_search.domain.api.MoviesInteractor
 import com.example.movies.movie_search.domain.model.Movie
 import com.example.movies.util.SingleLiveEvent
+import com.example.movies.util.debounce
 
 
 class MoviesViewModel(
@@ -21,14 +20,9 @@ class MoviesViewModel(
 
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
     }
 
-
-    private val handler = Handler(Looper.getMainLooper())
-
     private val stateLiveData = MutableLiveData<MoviesState>()
-
     fun observeState(): LiveData<MoviesState> = mediatorStateLiveData
 
     private val showToast = SingleLiveEvent<String>()
@@ -36,22 +30,15 @@ class MoviesViewModel(
 
     private var latestSearchText: String? = null
 
+    private val movieSearchDebounce = debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
+        searchRequest(changedText)
+    }
+
     fun searchDebounce(changedText: String) {
-        if (latestSearchText == changedText) {
-            return
+        if (latestSearchText = changedText) {
+            latestSearchText = changedText
+            movieSearchDebounce(changedText)
         }
-
-        this.latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { searchRequest(changedText) }
-
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            postTime,
-        )
     }
 
     private fun searchRequest(newSearchText: String) {
@@ -138,8 +125,5 @@ class MoviesViewModel(
                 )
             }
         }
-    }
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 }

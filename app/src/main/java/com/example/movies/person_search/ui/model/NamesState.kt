@@ -1,4 +1,4 @@
-package com.example.movies.person_search.ui
+package com.example.movies.person_search.ui.model
 
 import com.example.movies.person_search.domain.Person
 
