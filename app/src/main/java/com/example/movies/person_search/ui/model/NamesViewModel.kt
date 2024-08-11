@@ -9,8 +9,7 @@ import com.example.movies.R
 import com.example.movies.person_search.domain.Person
 import com.example.movies.person_search.domain.api.NamesInteractor
 import com.example.movies.util.SingleLiveEvent
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import com.example.movies.util.debounce
 import kotlinx.coroutines.launch
 
 class NamesViewModel(
@@ -29,22 +28,19 @@ class NamesViewModel(
     fun observeShowToast(): LiveData<String?> = showToast
 
     private var latestSearchText: String? = null
-    private var searchJob: Job? = null
 
-
-    fun searchDebounce(changedText: String) {
-        if (latestSearchText == changedText) {
-            return
-        }
-
-        latestSearchText = changedText
-
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(SEARCH_DEBOUNCE_DELAY)
+    private val personSearchDebounce =
+        debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
             searchRequest(changedText)
         }
+
+    fun searchDebounce(changedText: String) {
+        if (latestSearchText != changedText) {
+            latestSearchText = changedText
+            personSearchDebounce(changedText)
+        }
     }
+
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
@@ -69,14 +65,23 @@ class NamesViewModel(
 
         when {
             errorMessage != null -> {
-                renderState(NamesState.Error(message = context.getString(
+                renderState(
+                    NamesState.Error(
+                        message = context.getString(
                             R.string.something_went_wrong
-                        )))
+                        )
+                    )
+                )
                 showToast.postValue(errorMessage)
             }
 
-            persons.isEmpty() -> { renderState(NamesState.Empty(message = context.getString(R.string.nothing_found))) }
-            else -> { renderState(NamesState.Content(persons = persons)) }
+            persons.isEmpty() -> {
+                renderState(NamesState.Empty(message = context.getString(R.string.nothing_found)))
+            }
+
+            else -> {
+                renderState(NamesState.Content(persons = persons))
+            }
         }
     }
 
