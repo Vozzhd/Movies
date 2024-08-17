@@ -6,7 +6,7 @@ import com.example.movies.di.interactorModule
 import com.example.movies.di.navigationModule
 import com.example.movies.di.repositoryModule
 import com.example.movies.di.viewModelModule
-import com.example.movies.search.ui.models.MoviesViewModel
+import com.example.movies.movie_search.ui.models.MoviesViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

@@ -3,9 +3,11 @@ package com.example.movies.details.ui.cast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.movies.details.ui.cast.RV.MoviesCastRVItem
-import com.example.movies.search.domain.api.MoviesInteractor
-import com.example.movies.search.domain.model.MovieCast
+import com.example.movies.movie_search.domain.api.MoviesInteractor
+import com.example.movies.movie_search.domain.model.MovieCast
+import kotlinx.coroutines.launch
 
 class MovieCastViewModel(
     private val movieId: String,
@@ -18,20 +20,24 @@ class MovieCastViewModel(
     init {
         stateLiveData.postValue(MoviesCastState.Loading)
 
-        moviesInteractor.getMovieCast(movieId, object : MoviesInteractor.MovieCastConsumer {
-
-            override fun consume(movieCast: MovieCast?, errorMessage: String?) {
-                if (movieCast != null) {
-                    stateLiveData.postValue(castToUiStateContent(movieCast))
-                } else {
-                    stateLiveData.postValue(
-                        MoviesCastState.Error(
-                            errorMessage ?: "Неизвестная ошибка"
-                        )
-                    )
+        viewModelScope.launch {
+            moviesInteractor.getMovieCast(movieId)
+                .collect { pair ->
+                    processResult(pair.first, pair.second)
                 }
-            }
-        })
+        }
+    }
+
+    private fun processResult(movieCast: MovieCast?, errorMessage: String?) {
+        if (movieCast != null) {
+            stateLiveData.postValue(castToUiStateContent(movieCast))
+        } else {
+            stateLiveData.postValue(
+                MoviesCastState.Error(
+                    errorMessage ?: "Неизвестная ошибка"
+                )
+            )
+        }
     }
 
     private fun castToUiStateContent(cast: MovieCast): MoviesCastState {

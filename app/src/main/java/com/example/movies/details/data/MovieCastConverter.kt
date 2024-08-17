@@ -6,8 +6,8 @@ import com.example.movies.details.data.dto.DirectorsResponse
 import com.example.movies.details.data.dto.MovieCastResponse
 import com.example.movies.details.data.dto.OtherResponse
 import com.example.movies.details.data.dto.WritersResponse
-import com.example.movies.search.domain.model.MovieCast
-import com.example.movies.search.domain.model.MovieCastPerson
+import com.example.movies.movie_search.domain.model.MovieCast
+import com.example.movies.movie_search.domain.model.MovieCastPerson
 
 class MovieCastConverter {
 

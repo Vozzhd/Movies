@@ -1,7 +1,7 @@
 package com.example.movies.details.ui.cast.RV
 
 import com.example.movies.core.ui.RVItem
-import com.example.movies.search.domain.model.MovieCastPerson
+import com.example.movies.movie_search.domain.model.MovieCastPerson
 
 sealed interface    MoviesCastRVItem : RVItem {
     data class HeaderItem(
