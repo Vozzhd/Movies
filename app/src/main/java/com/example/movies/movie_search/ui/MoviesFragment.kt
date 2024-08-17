@@ -64,9 +64,9 @@ class MoviesFragment : Fragment() {
                     (activity as RootActivity).animateBottomNavigationView()
                 }
 
-                override fun onFavoriteToggleClick(movie: Movie) {
-                    viewModel.toggleFavorite(movie)
-                }
+//                override fun onFavoriteToggleClick(movie: Movie) {
+//                    viewModel.toggleFavorite(movie)
+//                }
             }
         )
 

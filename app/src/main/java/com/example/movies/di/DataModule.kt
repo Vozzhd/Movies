@@ -2,8 +2,10 @@ package com.example.movies.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.movies.movie_search.data.network.NetworkClient
+import androidx.room.Room
+import com.example.movies.movie_search.data.db.AppDatabase
 import com.example.movies.movie_search.data.network.IMDbApiService
+import com.example.movies.movie_search.data.network.NetworkClient
 import com.example.movies.movie_search.data.network.retrofit.RetrofitNetworkClient
 import com.example.movies.movie_search.data.storage.LocalStorage
 import com.google.gson.Gson
@@ -23,7 +25,7 @@ val dataModule = module {
             .create(IMDbApiService::class.java)
     }
 
-    single <SharedPreferences> {
+    single<SharedPreferences> {
         androidContext().getSharedPreferences("local_storage", Context.MODE_PRIVATE)
     }
 
@@ -33,5 +35,12 @@ val dataModule = module {
 
     single<NetworkClient> { RetrofitNetworkClient(androidContext(), get()) }
 
-
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "database.db"
+        )
+            .build()
+    }
 }

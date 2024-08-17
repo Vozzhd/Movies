@@ -1,4 +1,4 @@
-package com.example.movies.movie_search.data.api
+package com.example.movies.movie_search.data.impl
 
 import com.example.movies.details.data.MovieCastConverter
 import com.example.movies.details.data.MovieCastRequest
@@ -6,6 +6,9 @@ import com.example.movies.details.data.MovieDetails
 import com.example.movies.details.data.MovieDetailsRequest
 import com.example.movies.details.data.MovieDetailsResponse
 import com.example.movies.details.data.dto.MovieCastResponse
+import com.example.movies.movie_search.data.converters.MovieDbConvertor
+import com.example.movies.movie_search.data.db.AppDatabase
+import com.example.movies.movie_search.data.dto.MovieDto
 import com.example.movies.movie_search.data.dto.MoviesSearchRequest
 import com.example.movies.movie_search.data.dto.MoviesSearchResponse
 import com.example.movies.movie_search.data.network.NetworkClient
@@ -20,7 +23,9 @@ import kotlinx.coroutines.flow.flow
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
     private val localStorage: LocalStorage,
-    private val movieCastConverter: MovieCastConverter
+    private val movieCastConverter: MovieCastConverter,
+    private val appDatabase: AppDatabase,
+    private val movieDbConvertor : MovieDbConvertor
 ) : MoviesRepository {
 
     override fun searchMovies(expression: String): Flow<Resource<List<Movie>>> = flow {
@@ -41,9 +46,10 @@ class MoviesRepositoryImpl(
                             it.image,
                             it.title,
                             it.description,
-                            inFavorite = stored.contains(it.id)
+                        //    inFavorite = stored.contains(it.id)
                         )
                     }
+                    saveMovie(results)
                     emit(Resource.Success(data))
                 }
             }
@@ -52,6 +58,11 @@ class MoviesRepositoryImpl(
                 emit(Resource.Error("Ошибка сервера"))
             }
         }
+    }
+
+    private suspend fun saveMovie(movies: List<MovieDto>) {
+        val movieEntities = movies.map { movie -> movieDbConvertor.map(movie) }
+        appDatabase.movieDao().insertMovies(movieEntities)
     }
 
     override fun getMovieDetails(movieId: String): Flow<Resource<MovieDetails>> = flow {
